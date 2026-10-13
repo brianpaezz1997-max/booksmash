@@ -1,32 +1,52 @@
 const express = require('express');
-const multer = require('multer');
+const fs = require('fs');
 const path = require('path');
-const cors = require('cors');
-require('dotenv').config();
-
-const { MercadoPagoConfig, Preference } = require('mercadopago');
+const multer = require('multer');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuración de Mercado Pago
-const mpAccessToken = process.env.MP_ACCESS_TOKEN || '';
-let client = null;
-if (mpAccessToken) {
-  client = new MercadoPagoConfig({ accessToken: mpAccessToken });
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Archivos de persistencia local (Base de datos en archivos JSON)
+const DATA_DIR = path.join(__dirname, 'data');
+if (!fs.existsSync(DATA_DIR)) {
+  fs.mkdirSync(DATA_DIR);
 }
 
-// Middleware
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+const USERS_FILE = path.join(DATA_DIR, 'users.json');
+const STICKERS_FILE = path.join(DATA_DIR, 'stickers.json');
 
-// Configuración de Multer para fotos subidas
+function readJsonFile(filePath, defaultVal) {
+  try {
+    if (fs.existsSync(filePath)) {
+      const data = fs.readFileSync(filePath, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (err) {
+    console.error(`Error leyendo ${filePath}:`, err);
+  }
+  return defaultVal;
+}
+
+function writeJsonFile(filePath, data) {
+  try {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+  } catch (err) {
+    console.error(`Error escribiendo ${filePath}:`, err);
+  }
+}
+
+// Configuración de Multer para subir fotos y almacenarlas en disco
+const uploadsDir = path.join(__dirname, 'public', 'uploads');
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
+
 const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, 'uploads/');
-  },
+  destination: (req, file, cb) => cb(null, uploadsDir),
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
     cb(null, uniqueSuffix + path.extname(file.originalname));
@@ -34,105 +54,90 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Base de Datos Temporal en Memoria (MVP)
-let users = [{ id: '1', username: 'BrianPaez', email: 'brian@booksmash.app', password: '123' }];
-let stickers = [];
-let venues = [
-  { id: '1', name: 'Estadio Monumental', qr_code_hash: 'QR_MONUMENTAL_001' },
-  { id: '2', name: 'Quilmes Bar', qr_code_hash: 'QR_QUILMES_BAR' }
-];
-
-// RUTAS API
-
-// Auth
-app.post('/api/users/login', (req, res) => {
-  const { email, password } = req.body;
-  const user = users.find(u => u.email === email && u.password === password);
-  if (user) return res.json({ user });
-  res.status(401).json({ error: 'Credenciales inválidas' });
-});
+// --- ENDPOINTS DE USUARIOS (PERSISTENTES) ---
 
 app.post('/api/users/register', (req, res) => {
   const { username, email, password } = req.body;
-  if (users.some(u => u.email === email)) return res.status(400).json({ error: 'El email ya existe' });
-  
-  const newUser = { id: String(users.length + 1), username, email, password };
+  if (!username || !email || !password) {
+    return res.status(400).json({ error: 'Faltan datos obligatorios para el registro' });
+  }
+
+  let users = readJsonFile(USERS_FILE, []);
+  const existing = users.find(u => u.email === email);
+  if (existing) {
+    return res.status(400).json({ error: 'El correo electrónico ya está registrado' });
+  }
+
+  const newUser = {
+    id: 'user_' + Date.now(),
+    username,
+    email,
+    password, // En un entorno comercial real se encriptaría con bcrypt
+    created_at: new Date().toISOString()
+  };
+
   users.push(newUser);
-  res.json({ user: newUser });
+  writeJsonFile(USERS_FILE, users);
+
+  res.json({ success: true, user: { id: newUser.id, username: newUser.username, email: newUser.email } });
 });
 
-// Check-in
+app.post('/api/users/login', (req, res) => {
+  const { email, password } = req.body;
+  let users = readJsonFile(USERS_FILE, []);
+  
+  const user = users.find(u => u.email === email && u.password === password);
+  if (!user) {
+    return res.status(401).json({ error: 'Correo electrónico o contraseña incorrectos' });
+  }
+
+  res.json({ success: true, user: { id: user.id, username: user.username, email: user.email } });
+});
+
+// --- ENDPOINTS DE LUGARES Y CHECK-IN ---
+
 app.post('/api/venues/checkin', (req, res) => {
   const { qr_code_hash } = req.body;
-  const venue = venues.find(v => v.qr_code_hash === qr_code_hash);
-  if (venue) return res.json({ venue });
-  res.status(404).json({ error: 'Código QR no válido' });
-});
-
-// Stickers
-app.post('/api/stickers', upload.single('photo'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No se subió archivo' });
-  const { user_id, venue_id, device_watermark } = req.body;
-  const venue = venues.find(v => v.id === venue_id) || { name: 'Evento Autorizado' };
-
-  const newSticker = {
-    id: String(stickers.length + 1),
-    user_id,
-    venue_name: venue.name,
-    image_url: `/uploads/${req.file.filename}`,
-    device_watermark: device_watermark || 'iPhone 15 Pro',
-    created_at: new Date()
+  // Simulamos validación de QR de local o evento
+  const venue = {
+    id: 'venue_001',
+    name: qr_code_hash === 'QR_MONUMENTAL_001' ? 'Estadio Monumental' : 'Espacio Cultural BookSmash',
+    address: 'Buenos Aires, Argentina'
   };
-  stickers.push(newSticker);
-  res.json({ sticker: newSticker });
+  res.json({ success: true, venue });
 });
 
-app.get('/api/stickers/user/:id', (req, res) => {
-  res.json({ album: stickers });
-});
+// --- ENDPOINTS DE PUBLICACIONES Y FOTOS (STICKERS) ---
 
-// MERCADO PAGO - Crear preferencia de cobro real
-app.post('/api/payments/create-preference', async (req, res) => {
-  try {
-    if (!client) {
-      return res.status(500).json({ error: 'Mercado Pago no está configurado con Access Token' });
-    }
-
-    const { title, priceARS } = req.body;
-    const preference = new Preference(client);
-
-    const result = await preference.create({
-      body: {
-        items: [
-          {
-            title: title || 'Pase Comercial BookSmash',
-            quantity: 1,
-            unit_price: Number(priceARS) || 7500,
-            currency_id: 'ARS'
-          }
-        ],
-        back_urls: {
-          success: `${req.protocol}://${req.get('host')}/?status=success`,
-          failure: `${req.protocol}://${req.get('host')}/?status=failure`,
-          pending: `${req.protocol}://${req.get('host')}/?status=pending`
-        },
-        auto_return: 'approved'
-      }
-    });
-
-    res.json({ init_point: result.init_point });
-  } catch (error) {
-    console.error('Error MP:', error);
-    res.status(500).json({ error: 'Error al generar preferencia de pago' });
+app.post('/api/stickers', upload.single('photo'), (req, res) => {
+  const { user_id, venue_id, device_watermark } = req.body;
+  if (!req.file) {
+    return res.status(400).json({ error: 'No se adjuntó ninguna imagen' });
   }
+
+  let stickers = readJsonFile(STICKERS_FILE, []);
+  const newSticker = {
+    id: 'stk_' + Date.now(),
+    user_id,
+    venue_id,
+    venue_name: venue_id === 'venue_001' ? 'Estadio Monumental' : 'Evento BookSmash',
+    image_url: `/uploads/${req.file.filename}`,
+    device_watermark: device_watermark || 'Publicación Oficial',
+    created_at: new Date().toISOString()
+  };
+
+  stickers.unshift(newSticker); // Las más recientes primero
+  writeJsonFile(STICKERS_FILE, stickers);
+
+  res.json({ success: true, sticker: newSticker });
 });
 
-// Asegurar carpeta de uploads
-const fs = require('fs');
-if (!fs.existsSync('uploads')) {
-  fs.mkdirSync('uploads');
-}
+app.get('/api/stickers/user/:userId', (req, res) => {
+  const stickers = readJsonFile(STICKERS_FILE, []);
+  // Devolvemos todas las publicaciones de la red para alimentar el feed social
+  res.json({ success: true, album: stickers });
+});
 
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor BookSmash corriendo en puerto ${PORT}`);
+  console.log(`Servidor BookSmash ejecutándose en puerto ${PORT}`);
 });
