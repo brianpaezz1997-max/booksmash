@@ -40,7 +40,7 @@
 
     .container { max-width: 600px; margin: 0 auto; padding: 15px; }
     
-    /* VISTA DE AUTENTICACIÓN (LOGIN / REGISTRO) */
+    /* VISTA DE AUTENTICACIÓN */
     .landing-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 100px); gap: 20px; }
     .auth-box { 
       width: 100%; 
@@ -55,7 +55,7 @@
     .tab-btn { flex: 1; padding: 10px; background: none; border: none; font-weight: bold; color: #65676b; cursor: pointer; border-bottom: 3px solid transparent; font-size: 1rem; }
     .tab-btn.active { color: #1877f2; border-bottom-color: #1877f2; }
     
-    input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 0.95rem; background: #f5f6f7; color: #1c1e21; }
+    input, select { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 0.95rem; background: #f5f6f7; color: #1c1e21; }
     input:focus { border-color: #1877f2; outline: none; background: #fff; }
     
     .btn-fb { width: 100%; padding: 12px; background: #1877f2; border: none; color: white; font-weight: bold; font-size: 1rem; border-radius: 6px; cursor: pointer; }
@@ -68,7 +68,7 @@
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* CAJA DE NUEVA PUBLICACIÓN ESTILO FB */
+    /* CAJA CREAR PUBLICACIÓN */
     .create-post-box { background: #ffffff; border: 1px solid #dadde1; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
     .create-post-top { display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #e4e6eb; padding-bottom: 10px; }
     .create-post-input { flex: 1; background: #f0f2f5; border: none; border-radius: 20px; padding: 10px 15px; font-size: 0.95rem; cursor: pointer; }
@@ -76,11 +76,15 @@
 
     /* TARJETA DE PUBLICACIÓN (POST) */
     .fb-post { background: #ffffff; border: 1px solid #dadde1; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; }
-    .fb-post-header { padding: 12px; display: flex; align-items: center; gap: 10px; }
+    .fb-post-header { padding: 12px; display: flex; align-items: center; justify-content: space-between; }
+    .fb-post-user-info { display: flex; align-items: center; gap: 10px; }
     .fb-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
     .fb-post-user { font-weight: bold; font-size: 0.95rem; color: #050505; }
     .fb-post-time { font-size: 0.75rem; color: #65676b; }
     
+    .friend-request-btn { background: #e4e6eb; border: none; color: #1877f2; padding: 5px 12px; border-radius: 6px; font-weight: bold; font-size: 0.8rem; cursor: pointer; }
+    .friend-request-btn.added { background: #e7f3ff; color: #1877f2; }
+
     .fb-post-body { padding: 0 12px 10px 12px; font-size: 0.95rem; color: #050505; }
     .fb-post-img { width: 100%; max-height: 400px; object-fit: cover; display: block; }
 
@@ -90,6 +94,11 @@
     .fb-action-btn:hover { background: #f0f2f5; }
     .fb-action-btn.liked { color: #1877f2; }
 
+    /* SECCIÓN DE AMIGOS / SOCIAL */
+    .friends-container { background: #ffffff; border: 1px solid #dadde1; border-radius: 8px; padding: 15px; margin-bottom: 15px; }
+    .friend-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f2f5; }
+    .friend-info { display: flex; align-items: center; gap: 10px; }
+
     /* PERFIL Y ÁLBUM */
     .profile-card { background: #ffffff; border: 1px solid #dadde1; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 15px; }
     .profile-avatar-lg { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin: 0 auto 10px auto; }
@@ -98,7 +107,7 @@
     .album-item { aspect-ratio: 1/1; background: #e4e6eb; border-radius: 4px; overflow: hidden; position: relative; }
     .album-item img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* NAVEGACIÓN INFERIOR ESTILO APP MÓVIL FB */
+    /* NAVEGACIÓN INFERIOR FB MÓVIL */
     .fb-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #dadde1; display: flex; justify-content: space-around; align-items: center; height: 50px; z-index: 1000; }
     .fb-nav-item { flex: 1; text-align: center; font-size: 1.4rem; color: #65676b; cursor: pointer; line-height: 50px; }
     .fb-nav-item.active { color: #1877f2; border-bottom: 3px solid #1877f2; }
@@ -147,7 +156,7 @@
     <!-- DASHBOARD PRINCIPAL -->
     <div id="dashboard-view">
 
-      <!-- SECCIÓN 1: INICIO / FEED DE NOTICIAS -->
+      <!-- SECCIÓN 1: INICIO / FEED DE NOTICIAS DE AMIGOS -->
       <div id="tab-feed" class="tab-content active">
         
         <!-- CAJA CREAR PUBLICACIÓN -->
@@ -157,16 +166,32 @@
             <input type="text" class="create-post-input" placeholder="¿Qué estás pensando?" onclick="switchTab('upload', document.querySelectorAll('.fb-nav-item')[2])" readonly>
           </div>
           <div class="create-post-actions">
-            <button class="fb-action-btn" onclick="switchTab('upload', document.querySelectorAll('.fb-nav-item')[2])">📷 Foto / Video</button>
-            <button class="fb-action-btn" onclick="switchTab('upload', document.querySelectorAll('.fb-nav-item')[2])">📍 Check-in</button>
+            <button class="fb-action-btn" onclick="switchTab('upload', document.querySelectorAll('.fb-nav-item')[2])">📷 Foto / Momento</button>
+            <button class="fb-action-btn" onclick="switchTab('friends', document.querySelectorAll('.fb-nav-item')[1])">👥 Buscar Amigos</button>
           </div>
         </div>
 
-        <!-- CONTENEDOR DE POSTS EN VIVO -->
+        <!-- CONTENEDOR DE POSTS DEL FEED -->
         <div id="feed-container"></div>
       </div>
 
-      <!-- SECCIÓN 2: SUBIR CONTENIDO (FOTO / CHECK-IN) -->
+      <!-- SECCIÓN 2: GESTIÓN DE AMIGOS Y SOLICITUDES -->
+      <div id="tab-friends" class="tab-content">
+        <div class="friends-container">
+          <h3 style="margin-top:0; color:#1877f2;">🤝 Red de Amigos y Solicitudes</h3>
+          <p style="font-size:0.85rem; color:#65676b;">Conectá con otros usuarios de la comunidad para visualizar sus fotos y publicaciones compartidas en tu feed.</p>
+          
+          <div style="margin-bottom: 12px;">
+            <input type="text" id="friend-search-input" placeholder="Buscar usuario por nombre..." oninput="filterFriendsList()">
+          </div>
+
+          <div id="friends-list-container">
+            <!-- Lista dinámica de usuarios disponibles para agregar -->
+          </div>
+        </div>
+      </div>
+
+      <!-- SECCIÓN 3: SUBIR FOTO / CHECK-IN -->
       <div id="tab-upload" class="tab-content">
         <div class="profile-card" style="text-align: left;">
           <h3 style="margin-top:0; color:#1877f2;">Crear publicación</h3>
@@ -185,12 +210,12 @@
         </div>
       </div>
 
-      <!-- SECCIÓN 3: PERFIL / ÁLBUM -->
+      <!-- SECCIÓN 4: PERFIL / ÁLBUM PERSONAL -->
       <div id="tab-profile" class="tab-content">
         <div class="profile-card">
           <img src="/logo.jpg" id="profile-avatar-img" class="profile-avatar-lg">
           <h2 id="profile-username" style="margin:5px 0 2px 0;">Usuario</h2>
-          <p style="color: #65676b; font-size: 0.85rem; margin:0;">Álbum personal de momentos</p>
+          <p style="color: #65676b; font-size: 0.85rem; margin:0;" id="profile-friends-count">0 Amigos conectados</p>
         </div>
 
         <div class="album-grid" id="profile-album-grid"></div>
@@ -200,9 +225,10 @@
 
   </div>
 
-  <!-- NAVEGACIÓN INFERIOR ESTILO FB MÓVIL -->
+  <!-- NAVEGACIÓN INFERIOR FB MÓVIL -->
   <nav class="fb-nav" id="fb-bottom-nav" style="display: none;">
     <div class="fb-nav-item active" onclick="switchTab('feed', this); loadFeed();">🏠</div>
+    <div class="fb-nav-item" onclick="switchTab('friends', this); loadAvailableUsers();">👥</div>
     <div class="fb-nav-item" onclick="switchTab('upload', this)">➕</div>
     <div class="fb-nav-item" onclick="switchTab('profile', this); loadProfileAlbum();">👤</div>
   </nav>
@@ -210,6 +236,7 @@
   <script>
     let activeUser = null;
     let currentVenueId = null;
+    let userFriends = {}; // Registro local de amigos aceptados
 
     document.addEventListener('DOMContentLoaded', () => {
       const saved = localStorage.getItem('fb_booksmash_session');
@@ -279,6 +306,7 @@
       document.getElementById('header-user').style.display = 'flex';
       document.getElementById('profile-username').innerText = activeUser.username;
       loadFeed();
+      loadAvailableUsers();
     }
 
     function logout() {
@@ -300,11 +328,59 @@
     function toggleLike(btn) {
       btn.classList.toggle('liked');
       const textSpan = btn.querySelector('.like-text');
-      if (btn.classList.contains('liked')) {
-        textSpan.innerText = 'Me gusta 👍';
+      textSpan.innerText = btn.classList.contains('liked') ? 'Me gusta 👍' : 'Me gusta';
+    }
+
+    function toggleAddFriend(userId, userName, btn) {
+      if (userFriends[userId]) {
+        delete userFriends[userId];
+        btn.classList.remove('added');
+        btn.innerText = 'Agregar amigo';
+        alert(`Has dejado de seguir a ${userName}`);
       } else {
-        textSpan.innerText = 'Me gusta';
+        userFriends[userId] = userName;
+        btn.classList.add('added');
+        btn.innerText = '✓ Amigos';
+        alert(`¡Ahora sos amigo de ${userName}! Sus publicaciones aparecerán en tu feed.`);
       }
+      updateFriendsCount();
+      loadFeed();
+    }
+
+    function updateFriendsCount() {
+      const count = Object.keys(userFriends).length;
+      document.getElementById('profile-friends-count').innerText = `${count} Amigos conectados`;
+    }
+
+    async function loadAvailableUsers() {
+      // Simula listado de miembros de la red social para conectar
+      const container = document.getElementById('friends-list-container');
+      container.innerHTML = `
+        <div class="friend-item">
+          <div class="friend-info">
+            <img src="/logo.jpg" class="fb-avatar">
+            <div>
+              <strong style="font-size:0.9rem;">Camila Sosa</strong>
+              <div style="font-size:0.75rem; color:#65676b;">Asistió a Estadio Monumental</div>
+            </div>
+          </div>
+          <button class="friend-request-btn ${userFriends['camila_s'] ? 'added' : ''}" onclick="toggleAddFriend('camila_s', 'Camila Sosa', this)">
+            ${userFriends['camila_s'] ? '✓ Amigos' : 'Agregar amigo'}
+          </button>
+        </div>
+        <div class="friend-item">
+          <div class="friend-info">
+            <img src="/logo.jpg" class="fb-avatar">
+            <div>
+              <strong style="font-size:0.9rem;">Marcos Rodríguez</strong>
+              <div style="font-size:0.75rem; color:#65676b;">Explorador de eventos</div>
+            </div>
+          </div>
+          <button class="friend-request-btn ${userFriends['marcos_r'] ? 'added' : ''}" onclick="toggleAddFriend('marcos_r', 'Marcos Rodríguez', this)">
+            ${userFriends['marcos_r'] ? '✓ Amigos' : 'Agregar amigo'}
+          </button>
+        </div>
+      `;
     }
 
     function checkin() {
@@ -332,7 +408,7 @@
       formData.append('photo', fileInput.files[0]);
       formData.append('user_id', activeUser.id);
       formData.append('venue_id', currentVenueId || '1');
-      formData.append('device_watermark', 'Publicación Oficial');
+      formData.append('device_watermark', 'Momento Compartido');
 
       fetch('/api/stickers', { method: 'POST', body: formData })
       .then(res => res.json())
@@ -355,35 +431,55 @@
         const container = document.getElementById('feed-container');
         container.innerHTML = '';
 
+        let hasPosts = false;
+
+        // Publicación del propio usuario
         if (data.album && data.album.length > 0) {
+          hasPosts = true;
           data.album.forEach(st => {
-            container.innerHTML += `
-              <div class="fb-post">
-                <div class="fb-post-header">
-                  <img src="/logo.jpg" class="fb-avatar">
-                  <div>
-                    <div class="fb-post-user">${activeUser.username}</div>
-                    <div class="fb-post-time">📍 ${st.venue_name || 'Evento'} • Hace un momento</div>
-                  </div>
-                </div>
-                <div class="fb-post-body">Momento capturado en ${st.venue_name || 'el evento'}.</div>
-                <img src="${st.image_url}" class="fb-post-img">
-                <div class="fb-post-stats">
-                  <span>👍 1 Me gusta</span>
-                  <span>0 comentarios</span>
-                </div>
-                <div class="fb-post-actions">
-                  <button class="fb-action-btn" onclick="toggleLike(this)"><span class="like-text">Me gusta</span></button>
-                  <button class="fb-action-btn">💬 Comentar</button>
-                  <button class="fb-action-btn">↗️ Compartir</button>
-                </div>
-              </div>
-            `;
+            container.innerHTML += renderPostHTML(activeUser.username, st.image_url, st.venue_name || 'Evento Social', 'Tus recuerdos', 'me');
           });
-        } else {
-          container.innerHTML = '<div style="background:white; padding:20px; text-align:center; border-radius:8px; color:#65676b;">No hay publicaciones en el feed todavía. ¡Subí la primera!</div>';
+        }
+
+        // Publicaciones simuladas de amigos conectados en la red
+        Object.keys(userFriends).forEach(friendId => {
+          hasPosts = true;
+          const friendName = userFriends[friendId];
+          container.innerHTML += renderPostHTML(friendName, '/logo.jpg', 'Estadio Monumental • Fecha 15', '¡Viviendo una gran noche de fútbol y momentos inolvidables!', friendId);
+        });
+
+        if (!hasPosts) {
+          container.innerHTML = '<div style="background:white; padding:20px; text-align:center; border-radius:8px; color:#65676b;">Tu feed está tranquilo. Agregá amigos en la sección 👥 o subí una foto para empezar a socializar.</div>';
         }
       } catch(e) { console.error(e); }
+    }
+
+    function renderPostHTML(username, imageUrl, venue, caption, authorId) {
+      return `
+        <div class="fb-post">
+          <div class="fb-post-header">
+            <div class="fb-post-user-info">
+              <img src="/logo.jpg" class="fb-avatar">
+              <div>
+                <div class="fb-post-user">${username}</div>
+                <div class="fb-post-time">📍 ${venue} • Hace un momento</div>
+              </div>
+            </div>
+            ${authorId !== 'me' ? `<button class="friend-request-btn added">✓ Amigos</button>` : ''}
+          </div>
+          <div class="fb-post-body">${caption}</div>
+          <img src="${imageUrl}" class="fb-post-img">
+          <div class="fb-post-stats">
+            <span>👍 3 Me gusta</span>
+            <span>1 comentario</span>
+          </div>
+          <div class="fb-post-actions">
+            <button class="fb-action-btn" onclick="toggleLike(this)"><span class="like-text">Me gusta</span></button>
+            <button class="fb-action-btn">💬 Comentar</button>
+            <button class="fb-action-btn">↗️ Compartir</button>
+          </div>
+        </div>
+      `;
     }
 
     async function loadProfileAlbum() {
@@ -403,7 +499,7 @@
             `;
           });
         } else {
-          grid.innerHTML = '<p style="color:#65676b; grid-column:span 3; text-align:center;">Sin fotos en el álbum.</p>';
+          grid.innerHTML = '<p style="color:#65676b; grid-column:span 3; text-align:center;">Sin fotos en tu álbum personal.</p>';
         }
       } catch(e) { console.error(e); }
     }
