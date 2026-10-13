@@ -3,183 +3,105 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BookSmash - Red Social de Álbumes</title>
+  <title>BookSmash - Red Social</title>
   <link rel="icon" type="image/jpeg" href="/logo.jpg">
-  
-  <!-- SDK Oficial Google Identity Services -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-
   <style>
-    * { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+    * { box-sizing: border-box; font-family: Helvetica, Arial, sans-serif; }
     
     body { 
-      background: linear-gradient(rgba(15, 23, 42, 0.92), rgba(2, 6, 23, 0.98)), url('/logo.jpg') center/cover no-repeat fixed; 
-      color: #f8fafc; 
+      background-color: #f0f2f5; 
+      color: #1c1e21; 
       margin: 0; 
       padding: 0; 
       min-height: 100vh;
-      padding-bottom: 75px; 
+      padding-bottom: 60px; 
     }
     
-    /* ENCABEZADO SUPERIOR */
+    /* ENCABEZADO SUPERIOR ESTILO FACEBOOK */
     header { 
-      background: rgba(2, 6, 23, 0.95); 
-      backdrop-filter: blur(12px); 
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
-      padding: 10px 18px; 
+      background: #ffffff; 
+      border-bottom: 1px solid #dadde1; 
+      padding: 8px 16px; 
       display: flex; 
       justify-content: space-between; 
       align-items: center; 
       position: sticky; 
       top: 0; 
       z-index: 100; 
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     .brand-container { display: flex; align-items: center; gap: 10px; }
-    .brand-icon { width: 34px; height: 34px; border-radius: 8px; object-fit: cover; border: 1px solid rgba(255, 255, 255, 0.2); box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
-    .brand-logo-img { height: 26px; object-fit: contain; }
+    .brand-icon { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
+    .brand-logo-img { height: 28px; object-fit: contain; }
     
-    .header-actions { display: flex; align-items: center; gap: 10px; }
-    .icon-btn-badge { position: relative; background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; color: #cbd5e1; font-size: 1.1rem; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
-    .badge-counter { position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; font-size: 0.65rem; font-weight: bold; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
-    .settings-icon-btn { background: rgba(30, 41, 59, 0.8); border: 1px solid #334155; color: #cbd5e1; font-size: 1.1rem; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+    .header-actions { display: flex; align-items: center; gap: 12px; }
+    .logout-btn { background: #e4e6eb; border: none; color: #4b4f56; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 0.85rem; }
+    .logout-btn:hover { background: #d8dadf; }
 
-    .logout-btn { background: #ef4444; border: none; color: white; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.8rem; }
-
-    .container { max-width: 680px; margin: 0 auto; padding: 15px; }
+    .container { max-width: 600px; margin: 0 auto; padding: 15px; }
     
-    /* VISTA LANDING & AUTH */
-    .landing-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 120px); gap: 20px; text-align: center; }
+    /* VISTA DE AUTENTICACIÓN (LOGIN / REGISTRO) */
+    .landing-wrapper { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 100px); gap: 20px; }
     .auth-box { 
       width: 100%; 
-      max-width: 380px; 
-      background: rgba(30, 41, 59, 0.95); 
-      backdrop-filter: blur(14px); 
-      padding: 24px; 
-      border-radius: 16px; 
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8); 
-      border: 1px solid rgba(255, 255, 255, 0.15); 
+      max-width: 400px; 
+      background: #ffffff; 
+      padding: 20px; 
+      border-radius: 8px; 
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); 
+      border: 1px solid #dadde1; 
     }
-    .auth-tabs { display: flex; margin-bottom: 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-    .tab-btn { flex: 1; padding: 10px; background: none; border: none; font-weight: bold; color: #94a3b8; cursor: pointer; border-bottom: 2px solid transparent; font-size: 0.95rem; }
-    .tab-btn.active { color: #38bdf8; border-bottom-color: #38bdf8; }
+    .auth-tabs { display: flex; margin-bottom: 16px; border-bottom: 1px solid #dadde1; }
+    .tab-btn { flex: 1; padding: 10px; background: none; border: none; font-weight: bold; color: #65676b; cursor: pointer; border-bottom: 3px solid transparent; font-size: 1rem; }
+    .tab-btn.active { color: #1877f2; border-bottom-color: #1877f2; }
     
-    input, select { width: 100%; padding: 12px 14px; margin-bottom: 10px; border: 1px solid #334155; border-radius: 8px; font-size: 0.9rem; background: rgba(15, 23, 42, 0.85); color: white; }
-    input:focus, select:focus { border-color: #38bdf8; outline: none; box-shadow: 0 0 10px rgba(56, 189, 248, 0.3); }
+    input { width: 100%; padding: 12px; margin-bottom: 10px; border: 1px solid #ccd0d5; border-radius: 6px; font-size: 0.95rem; background: #f5f6f7; color: #1c1e21; }
+    input:focus { border-color: #1877f2; outline: none; background: #fff; }
     
-    .validation-hint { font-size: 0.72rem; color: #94a3b8; text-align: left; margin-bottom: 12px; line-height: 1.3; }
-    .validation-hint.error { color: #f87171; }
+    .btn-fb { width: 100%; padding: 12px; background: #1877f2; border: none; color: white; font-weight: bold; font-size: 1rem; border-radius: 6px; cursor: pointer; }
+    .btn-fb:hover { background: #166fe5; }
+    .btn-green-fb { background: #42b72a; }
+    .btn-green-fb:hover { background: #36a420; }
 
-    .btn-main { width: 100%; padding: 12px; background: #2563eb; border: none; color: white; font-weight: bold; font-size: 0.95rem; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-    .btn-main:hover { background: #1d4ed8; }
-    .btn-green { background: #059669; }
-    .btn-purple { background: #9333ea; }
-    .btn-mp { background: #009ee3; }
-
-    .divider { text-align: center; margin: 12px 0; color: #64748b; font-size: 0.8rem; position: relative; }
-    .divider::before, .divider::after { content: ""; position: absolute; top: 50%; width: 42%; height: 1px; background: #334155; }
-    .divider::before { left: 0; } .divider::after { right: 0; }
-
-    .google-btn-container { display: flex; justify-content: center; width: 100%; margin-top: 10px; }
-
-    /* DASHBOARD */
+    /* DASHBOARD Y MURO */
     #dashboard-view { display: none; margin-top: 10px; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
 
-    /* CARDS GENÉRICAS */
-    .card-box { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(8px); border: 1px solid #334155; border-radius: 14px; padding: 16px; margin-bottom: 20px; }
+    /* CAJA DE NUEVA PUBLICACIÓN ESTILO FB */
+    .create-post-box { background: #ffffff; border: 1px solid #dadde1; border-radius: 8px; padding: 12px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+    .create-post-top { display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #e4e6eb; padding-bottom: 10px; }
+    .create-post-input { flex: 1; background: #f0f2f5; border: none; border-radius: 20px; padding: 10px 15px; font-size: 0.95rem; cursor: pointer; }
+    .create-post-actions { display: flex; justify-content: space-between; padding-top: 10px; align-items: center; }
 
-    /* INSIGNIAS VECTORIALES / REACCIONES */
-    .custom-badge-icon { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #38bdf8; font-weight: 800; font-size: 0.85rem; color: #38bdf8; box-shadow: 0 0 10px rgba(56, 189, 248, 0.2); }
-    .badge-picker-row { display: flex; gap: 8px; justify-content: center; margin: 14px 0; }
-    .badge-option { padding: 8px 12px; background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-radius: 10px; cursor: pointer; text-align: center; transition: 0.2s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-    .badge-option.selected { border-color: #38bdf8; background: rgba(56, 189, 248, 0.2); transform: scale(1.08); box-shadow: 0 0 12px rgba(56, 189, 248, 0.4); }
-    .badge-lbl { font-size: 0.65rem; font-weight: 700; color: #cbd5e1; }
-
-    /* FEED */
-    .feed-post { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(8px); border: 1px solid #334155; border-radius: 14px; overflow: hidden; margin-bottom: 20px; }
-    .feed-header { padding: 12px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); }
-    .feed-user-info { display: flex; align-items: center; gap: 10px; }
-    .feed-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 1.5px solid #38bdf8; }
-    .follow-btn-mutual { background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; font-size: 0.75rem; font-weight: bold; padding: 5px 10px; border-radius: 20px; cursor: pointer; }
-    .follow-btn-mutual.connected { background: #059669; border-color: #34d399; color: white; }
-
-    .feed-img-wrapper { position: relative; cursor: pointer; }
-    .photo-watermark-overlay { position: absolute; top: 10px; right: 10px; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(6px); border: 1px solid rgba(255,255,255,0.2); color: #38bdf8; font-size: 0.68rem; font-weight: bold; padding: 3px 8px; border-radius: 12px; z-index: 5; }
-    .feed-img { width: 100%; max-height: 380px; object-fit: cover; display: block; }
-
-    .feed-reaction-bar { padding: 12px; display: flex; align-items: center; gap: 12px; background: rgba(15, 23, 42, 0.5); }
-    .slider-container { flex: 1; display: flex; align-items: center; gap: 10px; }
-    .reaction-slider { flex: 1; accent-color: #38bdf8; cursor: pointer; }
-    .reaction-val-text { font-size: 0.85rem; font-weight: bold; color: #38bdf8; min-width: 65px; text-align: right; }
-
-    /* EVENTOS CERCANOS */
-    .event-card { background: rgba(15, 23, 42, 0.7); border: 1px solid #334155; border-radius: 12px; padding: 14px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
-    .event-card-info h4 { margin: 0 0 4px 0; font-size: 0.95rem; color: #ffffff; }
-    .event-card-info p { margin: 0; font-size: 0.78rem; color: #94a3b8; }
-    .event-badge-promoted { background: rgba(217, 119, 6, 0.2); border: 1px solid #f59e0b; color: #fbbf24; font-size: 0.65rem; font-weight: bold; padding: 2px 6px; border-radius: 6px; margin-left: 6px; }
-
-    /* BILLETERA VIRTUAL Y PASARELA */
-    .wallet-balance-box { background: linear-gradient(135deg, #1e293b, #0f172a); border: 1px solid #38bdf8; border-radius: 16px; padding: 20px; text-align: center; margin-bottom: 20px; }
-    .wallet-balance-val { font-size: 2.2rem; font-weight: 900; color: #38bdf8; margin: 8px 0; }
-    .package-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 15px; }
-    .package-item { background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-radius: 10px; padding: 12px 8px; text-align: center; cursor: pointer; }
-    .package-item:hover { border-color: #fbbf24; }
-
-    /* MODAL PASARELA CHECKOUT */
-    .checkout-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); z-index: 4000; justify-content: center; align-items: center; padding: 20px; }
-    .checkout-modal.active { display: flex; }
-    .checkout-box { width: 100%; max-width: 440px; background: #1e293b; border: 1px solid #38bdf8; border-radius: 18px; padding: 22px; box-shadow: 0 20px 50px rgba(0,0,0,0.8); }
-    .checkout-methods-tabs { display: flex; gap: 6px; margin: 15px 0; overflow-x: auto; padding-bottom: 6px; }
-    .checkout-tab { flex: 1; padding: 8px 6px; background: #0f172a; border: 1px solid #334155; color: #94a3b8; border-radius: 8px; font-size: 0.75rem; font-weight: bold; cursor: pointer; text-align: center; white-space: nowrap; }
-    .checkout-tab.active { background: #2563eb; color: white; border-color: #38bdf8; }
-
-    /* PERFIL Y METRICAS */
-    .profile-header { text-align: center; margin-bottom: 18px; }
-    .avatar-wrapper { position: relative; width: 90px; height: 90px; margin: 0 auto 10px auto; }
-    .avatar-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid #38bdf8; }
-    .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 20px; }
-    .stat-card { background: rgba(30, 41, 59, 0.85); backdrop-filter: blur(8px); border: 1px solid #334155; border-radius: 12px; padding: 12px 6px; text-align: center; }
-    .stat-val { font-size: 1.1rem; font-weight: 800; color: #ffffff; }
-    .stat-lbl { font-size: 0.68rem; color: #94a3b8; margin-top: 2px; }
-
-    /* GRILLA 5x ÁLBUM */
-    .album-5x-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-    .sticker-slot { aspect-ratio: 1/1; border-radius: 8px; overflow: hidden; position: relative; background: #0f172a; border: 1px solid #334155; display: flex; flex-direction: column; justify-content: flex-end; cursor: pointer; transition: transform 0.2s; }
-    .sticker-slot:hover { transform: scale(1.03); border-color: #38bdf8; }
-    .sticker-slot img { position: absolute; top:0; left:0; width: 100%; height: 100%; object-fit: cover; }
-    .device-tag { position: relative; z-index: 2; background: rgba(0,0,0,0.75); color: #e2e8f0; font-size: 0.55rem; padding: 2px 4px; text-align: center; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-    /* MENÚ AJUSTES Y ACTIVIDAD (ESTILO INSTAGRAM) */
-    .settings-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #0b0f17; z-index: 3000; overflow-y: auto; flex-direction: column; }
-    .settings-modal.active { display: flex; }
-    .settings-nav-bar { background: #111827; border-bottom: 1px solid #1f2937; padding: 14px 16px; display: flex; align-items: center; gap: 16px; position: sticky; top: 0; z-index: 10; }
-    .settings-back-btn { background: none; border: none; color: #f8fafc; font-size: 1.3rem; cursor: pointer; display: flex; align-items: center; }
-    .settings-nav-title { font-size: 1.05rem; font-weight: 700; color: #f8fafc; margin: 0; }
+    /* TARJETA DE PUBLICACIÓN (POST) */
+    .fb-post { background: #ffffff; border: 1px solid #dadde1; border-radius: 8px; margin-bottom: 15px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); overflow: hidden; }
+    .fb-post-header { padding: 12px; display: flex; align-items: center; gap: 10px; }
+    .fb-avatar { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+    .fb-post-user { font-weight: bold; font-size: 0.95rem; color: #050505; }
+    .fb-post-time { font-size: 0.75rem; color: #65676b; }
     
-    .settings-container { max-width: 600px; margin: 0 auto; width: 100%; padding-bottom: 40px; }
-    .settings-group { border-bottom: 8px solid #0f172a; padding: 12px 0 4px 0; }
-    .settings-group-title { font-size: 0.75rem; font-weight: 700; color: #94a3b8; padding: 8px 16px; text-transform: uppercase; letter-spacing: 0.5px; }
-    .settings-item { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; cursor: pointer; transition: background 0.15s; }
-    .settings-item:hover { background: rgba(255, 255, 255, 0.04); }
-    .settings-item-left { display: flex; align-items: center; gap: 14px; font-size: 0.95rem; color: #f1f5f9; font-weight: 500; }
-    .settings-item-icon { font-size: 1.15rem; width: 24px; text-align: center; }
-    .settings-item-right { display: flex; align-items: center; gap: 8px; color: #64748b; font-size: 0.85rem; }
+    .fb-post-body { padding: 0 12px 10px 12px; font-size: 0.95rem; color: #050505; }
+    .fb-post-img { width: 100%; max-height: 400px; object-fit: cover; display: block; }
 
-    .settings-detail-pane { display: none; padding: 20px; }
-    .settings-detail-pane.active { display: block; }
+    .fb-post-stats { padding: 8px 12px; display: flex; justify-content: space-between; font-size: 0.8rem; color: #65676b; border-bottom: 1px solid #e4e6eb; }
+    .fb-post-actions { display: flex; padding: 4px 0; justify-content: space-around; border-bottom: 1px solid #e4e6eb; background: #fff; }
+    .fb-action-btn { background: none; border: none; flex: 1; padding: 8px; font-weight: bold; color: #65676b; font-size: 0.9rem; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .fb-action-btn:hover { background: #f0f2f5; }
+    .fb-action-btn.liked { color: #1877f2; }
 
-    /* NOTIFICACIONES MODAL */
-    .notifications-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.9); backdrop-filter: blur(10px); z-index: 3000; padding: 20px; overflow-y: auto; }
-    .notifications-modal.active { display: block; }
-    .notification-item { background: rgba(15, 23, 42, 0.8); border: 1px solid #334155; border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+    /* PERFIL Y ÁLBUM */
+    .profile-card { background: #ffffff; border: 1px solid #dadde1; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 15px; }
+    .profile-avatar-lg { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin: 0 auto 10px auto; }
+    
+    .album-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+    .album-item { aspect-ratio: 1/1; background: #e4e6eb; border-radius: 4px; overflow: hidden; position: relative; }
+    .album-item img { width: 100%; height: 100%; object-fit: cover; }
 
-    /* NAV INFERIOR */
-    .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(2, 6, 23, 0.96); backdrop-filter: blur(12px); border-top: 1px solid #1e293b; display: flex; justify-content: space-around; align-items: center; padding: 8px 0; z-index: 1000; }
-    .nav-item { display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b; text-decoration: none; font-size: 0.68rem; font-weight: 600; cursor: pointer; flex: 1; transition: 0.2s; }
-    .nav-icon { font-size: 1.25rem; margin-bottom: 2px; }
-    .nav-item.active { color: #38bdf8; }
-    .nav-item.capture-btn-nav .nav-icon { background: linear-gradient(135deg, #2563eb, #9333ea); color: white; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-top: -16px; border: 2px solid #0f172a; box-shadow: 0 0 15px rgba(147, 51, 234, 0.6); }
+    /* NAVEGACIÓN INFERIOR ESTILO APP MÓVIL FB */
+    .fb-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; border-top: 1px solid #dadde1; display: flex; justify-content: space-around; align-items: center; height: 50px; z-index: 1000; }
+    .fb-nav-item { flex: 1; text-align: center; font-size: 1.4rem; color: #65676b; cursor: pointer; line-height: 50px; }
+    .fb-nav-item.active { color: #1877f2; border-bottom: 3px solid #1877f2; }
   </style>
 </head>
 <body>
@@ -187,598 +109,117 @@
   <!-- ENCABEZADO SUPERIOR -->
   <header>
     <div class="brand-container">
-      <img src="/logo.jpg" alt="Logo BS" class="brand-icon">
+      <img src="/logo.jpg" alt="Logo" class="brand-icon">
       <img src="/encabezado.jpg" alt="BookSmash" class="brand-logo-img">
     </div>
     <div id="header-user" style="display: none;" class="header-actions">
-      <button class="icon-btn-badge" onclick="toggleNotificationsModal()">
-        🔔 <span class="badge-counter" id="notif-count">2</span>
-      </button>
-      <button class="settings-icon-btn" onclick="openSettings()">⚙️</button>
-      <button class="logout-btn" onclick="logout()">Salir</button>
+      <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
     </div>
   </header>
 
   <div class="container">
 
-    <!-- LANDING & AUTENTICACIÓN -->
+    <!-- VISTA AUTENTICACIÓN -->
     <div id="auth-view" class="landing-wrapper">
       <div class="auth-box">
         <div class="auth-tabs">
-          <button class="tab-btn active" id="tab-login" onclick="switchAuthTab('login')">Ingresar</button>
+          <button class="tab-btn active" id="tab-login" onclick="switchAuthTab('login')">Entrar</button>
           <button class="tab-btn" id="tab-register" onclick="switchAuthTab('register')">Crear cuenta</button>
         </div>
 
-        <!-- FORMULARIO LOGIN -->
+        <!-- LOGIN -->
         <div id="form-login">
-          <input type="email" id="login-email" placeholder="Correo electrónico (ej: usuario@mail.com)">
+          <input type="email" id="login-email" placeholder="Correo electrónico">
           <input type="password" id="login-password" placeholder="Contraseña">
-          <button class="btn-main" onclick="login()">Iniciar sesión</button>
+          <button class="btn-fb" onclick="login()">Iniciar sesión</button>
         </div>
 
-        <!-- FORMULARIO REGISTRO -->
+        <!-- REGISTRO -->
         <div id="form-register" style="display: none;">
-          <input type="text" id="reg-username" placeholder="Nombre de usuario (ej: BrianPaez)">
-          <input type="email" id="reg-email" placeholder="Correo electrónico (ej: usuario@mail.com)" oninput="validateRegisterForm()">
-          <input type="password" id="reg-password" placeholder="Contraseña segura" oninput="validateRegisterForm()">
-          
-          <div class="validation-hint" id="reg-password-hint">
-            • Requisitos: Mínimo 8 caracteres, al menos 1 número y 1 mayúscula.
-          </div>
-
-          <button class="btn-main btn-green" id="reg-submit-btn" onclick="register()">Crear mi cuenta</button>
+          <input type="text" id="reg-username" placeholder="Nombre completo">
+          <input type="email" id="reg-email" placeholder="Correo electrónico">
+          <input type="password" id="reg-password" placeholder="Contraseña nueva">
+          <button class="btn-fb btn-green-fb" onclick="register()">Registrarse</button>
         </div>
-
-        <div class="divider">o</div>
-
-        <div class="google-btn-container">
-          <div id="g_id_onload"
-               data-client_id="843292408221-sample.apps.googleusercontent.com"
-               data-callback="handleCredentialResponse"
-               data-auto_prompt="false">
-          </div>
-          <div class="g_id_signin" data-type="standard" data-size="large" data-theme="outline" data-text="sign_in_with" data-shape="rectangular"></div>
-        </div>
-
-      </div>
-
-      <div style="text-align: center; max-width: 420px;">
-        <h3 style="margin: 0 0 6px 0; color: #f8fafc;">Capturá momentos. Completá tu álbum.</h3>
-        <p style="margin:0; font-size:0.85rem; color:#94a3b8;">BookSmash valida tu presencia en eventos reales y te conecta con otros asistentes mediante reacciones exclusivas.</p>
       </div>
     </div>
 
-    <!-- DASHBOARD VIEW -->
+    <!-- DASHBOARD PRINCIPAL -->
     <div id="dashboard-view">
 
-      <!-- PESTAÑA 1: FEED GENERAL -->
-      <div id="tab-feed" class="tab-content">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 12px;">
-          <h3 style="color: #38bdf8; margin:0;">🌐 Feed en Vivo</h3>
-          <button style="background:rgba(56,189,248,0.1); border:1px solid #38bdf8; color:#38bdf8; padding:4px 10px; border-radius:8px; font-weight:bold; font-size:0.75rem; cursor:pointer;" onclick="loadAlbum()">🔄 Actualizar</button>
+      <!-- SECCIÓN 1: INICIO / FEED DE NOTICIAS -->
+      <div id="tab-feed" class="tab-content active">
+        
+        <!-- CAJA CREAR PUBLICACIÓN -->
+        <div class="create-post-box">
+          <div class="create-post-top">
+            <img src="/logo.jpg" class="fb-avatar" id="current-user-thumb">
+            <input type="text" class="create-post-input" placeholder="¿Qué estás pensando?" onclick="switchTab('upload', document.querySelectorAll('.fb-nav-item')[2])" readonly>
+          </div>
+          <div class="create-post-actions">
+            <button class="fb-action-btn" onclick="switchTab('upload', document.querySelectorAll('.fb-nav-item')[2])">📷 Foto / Video</button>
+            <button class="fb-action-btn" onclick="switchTab('upload', document.querySelectorAll('.fb-nav-item')[2])">📍 Check-in</button>
+          </div>
         </div>
+
+        <!-- CONTENEDOR DE POSTS EN VIVO -->
         <div id="feed-container"></div>
       </div>
 
-      <!-- PESTAÑA 2: CREADOR EMPRESARIAL DE EVENTOS Y CERCANOS -->
-      <div id="tab-events" class="tab-content">
-        <div class="card-box" style="border-color: #a855f7;">
-          <h3 style="margin-top:0; color: #a855f7;">🎟️ Creador Profesional de Eventos</h3>
-          <p style="font-size: 0.8rem; color: #94a3b8; margin-top:-6px;">Publicá tu evento o local comercial para atraer asistentes y generar interacciones en el muro.</p>
-
-          <label style="font-size: 0.8rem; color: #cbd5e1; font-weight: bold;">Nombre del Evento / Lugar:</label>
-          <input type="text" id="event-name-input" placeholder="Ej: After Office Quilmes Bar" style="margin-top:4px;">
-
-          <label style="font-size: 0.8rem; color: #cbd5e1; font-weight: bold;">Categoría Comercial:</label>
-          <select id="event-cat-select" style="margin-top:4px;">
-            <option>🍺 Bar / Pub / Restó</option>
-            <option>🪩 Boliche / Fiesta / Nightclub</option>
-            <option>⚽ Deportivo / Match Day</option>
-            <option>🎵 Concierto / Show en Vivo</option>
-          </select>
-
-          <label style="font-size: 0.8rem; color: #cbd5e1; font-weight: bold;">Magnitud y Alcance Objetivo (Pase de Publicación):</label>
-          <select id="event-tier-select" onchange="updateEventPricingUI()" style="margin-top:4px;">
-            <option value="free">Micro / Privado (Hasta 50 pers) — Gratis (1 Racha)</option>
-            <option value="tier1" selected>Bar / Local (Hasta 200 pers) — $7.500 ARS (750 BS)</option>
-            <option value="tier2">Club / Boliche (Hasta 1.000 pers) — $25.000 ARS (2.500 BS)</option>
-            <option value="tier3">Festival / Masivo (Hasta 5.000+ pers) — $75.000 ARS (7.500 BS)</option>
-          </select>
-
-          <div style="background: rgba(15,23,42,0.8); border: 1px solid #334155; border-radius: 10px; padding: 12px; margin-bottom: 14px;">
-            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#cbd5e1;">
-              <span>Impresiones Estimadas:</span>
-              <strong style="color:#38bdf8;" id="tier-reach-val">1.200 - 3.500 impresiones</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#cbd5e1; margin-top:4px;">
-              <span>Costo Total Pase:</span>
-              <strong style="color:#4ade80; font-size:0.95rem;" id="tier-cost-val">$7.500 ARS</strong>
-            </div>
-          </div>
-
-          <button class="btn-main btn-purple" onclick="triggerEventCheckout()">💳 Confirmar y Pagar Pase de Evento</button>
-        </div>
-
-        <h3 style="color: #38bdf8; margin-bottom: 12px;">📍 Eventos Cercanos en la Zona</h3>
-        <div id="events-list-container">
-          <div class="event-card">
-            <div class="event-card-info">
-              <h4>Estadio Monumental — Fecha 15 <span class="event-badge-promoted">PATROCINADO</span></h4>
-              <p>📍 Av. Figueroa Alcorta 7597 • 👥 1,240 asistentes</p>
-            </div>
-            <button class="btn-main" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="checkinFromCard('QR_MONUMENTAL_001', 'Estadio Monumental')">Asistir</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- PESTAÑA 3: CAPTURAR EN EL MOMENTO -->
-      <div id="tab-capture" class="tab-content">
-        <div class="card-box" style="border-color: #38bdf8;">
-          <h3 style="margin-top:0; color: #38bdf8;">📸 Capturar en el Momento</h3>
+      <!-- SECCIÓN 2: SUBIR CONTENIDO (FOTO / CHECK-IN) -->
+      <div id="tab-upload" class="tab-content">
+        <div class="profile-card" style="text-align: left;">
+          <h3 style="margin-top:0; color:#1877f2;">Crear publicación</h3>
+          <hr style="border:0; border-top:1px solid #dadde1; margin-bottom:15px;">
           
-          <div style="background: rgba(15,23,42,0.6); padding: 12px; border-radius: 10px; margin-bottom: 15px;">
-            <h4 style="margin:0 0 8px 0; color: #a855f7; font-size: 0.88rem;">1. Validar Presencia QR</h4>
-            <div style="display: flex; gap: 8px;">
-              <input type="text" id="qr-input" value="QR_MONUMENTAL_001" placeholder="Código QR" style="margin:0;">
-              <button class="btn-main" onclick="checkin()" style="width: auto; padding: 8px 14px;">Escanear</button>
-            </div>
-            <p id="checkin-status" style="margin: 8px 0 0 0; font-size: 0.8rem; font-weight: bold; color: #4ade80;"></p>
-          </div>
+          <label style="font-size:0.85rem; font-weight:bold; color:#65676b;">Código QR del Lugar / Evento:</label>
+          <input type="text" id="qr-input" value="QR_MONUMENTAL_001" placeholder="Código QR">
+          <button class="btn-fb" style="margin-bottom:15px;" onclick="checkin()">Validar Check-in</button>
+          <p id="checkin-status" style="font-size:0.85rem; font-weight:bold; color:#42b72a; margin-top:-5px;"></p>
 
-          <div id="upload-card" style="display: none; background: rgba(15,23,42,0.6); padding: 12px; border-radius: 10px;">
-            <h4 style="margin:0 0 6px 0; color: #38bdf8; font-size: 0.88rem;">2. Elegí la Insignia Vectorial para tu Foto</h4>
-            <p style="font-size: 0.72rem; color: #94a3b8; margin-top:0;">Tus seguidores reaccionarán a esta insignia personalizada con el slider.</p>
-            
-            <div class="badge-picker-row">
-              <div class="badge-option selected" onclick="selectBadge('SPARK', '⚡', this)">
-                <span style="font-size:1.2rem;">⚡</span>
-                <span class="badge-lbl">SPARK</span>
-              </div>
-              <div class="badge-option" onclick="selectBadge('FLAME', '🔥', this)">
-                <span style="font-size:1.2rem;">🔥</span>
-                <span class="badge-lbl">FLAME</span>
-              </div>
-              <div class="badge-option" onclick="selectBadge('APEX', '💎', this)">
-                <span style="font-size:1.2rem;">💎</span>
-                <span class="badge-lbl">APEX</span>
-              </div>
-              <div class="badge-option" onclick="selectBadge('LEGEND', '👑', this)">
-                <span style="font-size:1.2rem;">👑</span>
-                <span class="badge-lbl">LEGEND</span>
-              </div>
-            </div>
-
-            <input type="file" id="photo-input" accept="image/*" style="margin-top: 10px;">
-            <button class="btn-main btn-green" onclick="uploadSticker()">📸 Publicar Foto en Álbum (+10 pts)</button>
+          <div id="upload-section" style="display:none;">
+            <label style="font-size:0.85rem; font-weight:bold; color:#65676b;">Seleccionar Foto:</label>
+            <input type="file" id="photo-input" accept="image/*" style="margin-top:5px;">
+            <button class="btn-fb btn-green-fb" style="margin-top:10px;" onclick="uploadSticker()">Publicar en el Muro</button>
           </div>
         </div>
       </div>
 
-      <!-- PESTAÑA 4: BILLETERA VIRTUAL -->
-      <div id="tab-wallet" class="tab-content">
-        <div class="wallet-balance-box">
-          <span style="font-size: 0.85rem; color: #cbd5e1; font-weight: bold;">SALDO BILLETERA BOOKSMASH</span>
-          <div class="wallet-balance-val" id="wallet-balance-display">$1.500 BS</div>
-          <p style="font-size: 0.8rem; color: #94a3b8; margin: 0;">Equivalente a $15.000 ARS en créditos comerciales de eventos.</p>
+      <!-- SECCIÓN 3: PERFIL / ÁLBUM -->
+      <div id="tab-profile" class="tab-content">
+        <div class="profile-card">
+          <img src="/logo.jpg" id="profile-avatar-img" class="profile-avatar-lg">
+          <h2 id="profile-username" style="margin:5px 0 2px 0;">Usuario</h2>
+          <p style="color: #65676b; font-size: 0.85rem; margin:0;">Álbum personal de momentos</p>
         </div>
 
-        <div class="card-box">
-          <h4 style="margin-top:0; color: #fbbf24;">💳 Cargar Créditos Comerciales</h4>
-          <div class="package-grid">
-            <div class="package-item" onclick="openCheckoutModal('Carga 500 BS', 5000, 500)">
-              <strong>500 BS</strong><br><span style="font-size:0.75rem; color:#a855f7;">$5.000 ARS</span>
-            </div>
-            <div class="package-item" onclick="openCheckoutModal('Carga 1200 BS', 10000, 1200)" style="border-color: #fbbf24;">
-              <strong>1200 BS</strong><br><span style="font-size:0.75rem; color:#fbbf24;">$10.000 ARS</span>
-            </div>
-            <div class="package-item" onclick="openCheckoutModal('Carga 3000 BS', 22000, 3000)">
-              <strong>3000 BS</strong><br><span style="font-size:0.75rem; color:#4ade80;">$22.000 ARS</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PESTAÑA 5: MI MURO / PERFIL -->
-      <div id="tab-profile" class="tab-content active">
-        <div class="profile-header">
-          <div class="avatar-wrapper">
-            <img src="/logo.jpg" id="user-avatar-main" class="avatar-img" alt="Avatar">
-          </div>
-          <div class="profile-name" id="user-fullname">Usuario BookSmash</div>
-          <div style="font-size:0.8rem; color:#94a3b8;">Álbum de Figuras Registradas Ⓒ</div>
-        </div>
-
-        <div class="stats-row">
-          <div class="stat-card"><div class="stat-val" id="stat-places">0</div><div class="stat-lbl">Lugares</div></div>
-          <div class="stat-card"><div class="stat-val" id="stat-score">0%</div><div class="stat-lbl">Score</div></div>
-          <div class="stat-card"><div class="stat-val" id="stat-friends">1</div><div class="stat-lbl">Amigos</div></div>
-          <div class="stat-card"><div class="stat-val" style="color:#4ade80;">ACTIVO</div><div class="stat-lbl">Estado</div></div>
-        </div>
-
-        <div class="album-5x-grid" id="album-grid"></div>
+        <div class="album-grid" id="profile-album-grid"></div>
       </div>
 
     </div>
 
   </div>
 
-  <!-- PASARELA DE CHECKOUT Y MÉTODOS DE PAGO -->
-  <div class="checkout-modal" id="checkout-modal">
-    <div class="checkout-box">
-      <h3 style="margin-top:0; color:#38bdf8;" id="checkout-item-title">Pase Comercial</h3>
-      <p style="font-size:0.85rem; color:#cbd5e1; margin-top:-8px;">Total a Pagar: <strong style="color:#4ade80;" id="checkout-item-price">$7.500 ARS</strong></p>
-
-      <div class="checkout-methods-tabs">
-        <div class="checkout-tab active" onclick="switchCheckoutTab('mp', this)">Mercado Pago</div>
-        <div class="checkout-tab" onclick="switchCheckoutTab('transfer', this)">Transferencia / Alias</div>
-        <div class="checkout-tab" onclick="switchCheckoutTab('card', this)">Tarjeta Crédito/Débito</div>
-        <div class="checkout-tab" onclick="switchCheckoutTab('bs', this)">Saldo BS</div>
-      </div>
-
-      <div id="checkout-pane-mp">
-        <p style="font-size:0.8rem; color:#94a3b8;">Aboná de forma inmediata con tu cuenta de Mercado Pago o saldo en cuenta.</p>
-        <button class="btn-main btn-mp" onclick="confirmPayment('Mercado Pago')">💙 Pagar con Mercado Pago</button>
-      </div>
-
-      <div id="checkout-pane-transfer" style="display:none;">
-        <div style="background:#0f172a; padding:12px; border-radius:10px; font-size:0.8rem; color:#cbd5e1; margin-bottom:12px;">
-          <p style="margin:2px 0;"><strong>Alias:</strong> <span style="color:#38bdf8;">BOOKSMASH.PAGOS.MP</span></p>
-          <p style="margin:2px 0;"><strong>CBU:</strong> 0000003100049281738201</p>
-          <p style="margin:2px 0;"><strong>Titular:</strong> BookSmash SRL</p>
-        </div>
-        <button class="btn-main" style="background:#334155;" onclick="navigator.clipboard.writeText('BOOKSMASH.PAGOS.MP'); alert('¡Alias copiado al portapapeles!')">📋 Copiar Alias</button>
-        <button class="btn-main btn-green" style="margin-top:8px;" onclick="confirmPayment('Transferencia Bancaria')">✅ Ya realicé la transferencia</button>
-      </div>
-
-      <div id="checkout-pane-card" style="display:none;">
-        <input type="text" placeholder="Número de Tarjeta (16 dígitos)" style="font-size:0.85rem;">
-        <div style="display:flex; gap:8px;">
-          <input type="text" placeholder="MM/AA" style="font-size:0.85rem;">
-          <input type="text" placeholder="CVC" style="font-size:0.85rem;">
-        </div>
-        <button class="btn-main btn-green" onclick="confirmPayment('Tarjeta de Crédito')">🔒 Procesar Pago Seguro</button>
-      </div>
-
-      <div id="checkout-pane-bs" style="display:none;">
-        <p style="font-size:0.8rem; color:#cbd5e1;">Saldo Disponible: <strong style="color:#38bdf8;" id="checkout-bs-available">1.500 BS</strong></p>
-        <button class="btn-main btn-purple" onclick="confirmPayment('Saldo BS')">⚡ Pagar con Créditos BS</button>
-      </div>
-
-      <button class="btn-main" style="background:transparent; color:#94a3b8; margin-top:10px;" onclick="closeCheckoutModal()">Cancelar</button>
-    </div>
-  </div>
-
-  <!-- CONFIGURACIÓN Y ACTIVIDAD ESTILO INSTAGRAM CON SUBPANTALLAS -->
-  <div class="settings-modal" id="settings-modal">
-    <div class="settings-nav-bar">
-      <button class="settings-back-btn" onclick="settingsBackHandler()">←</button>
-      <h3 class="settings-nav-title" id="settings-header-title">Configuración y actividad</h3>
-    </div>
-
-    <div class="settings-container">
-      <div id="settings-main-menu">
-        <div class="settings-group">
-          <div class="settings-group-title">Cómo usas BookSmash</div>
-          <div class="settings-item" onclick="openSettingsPane('pane-saved', 'Guardado')">
-            <div class="settings-item-left"><span class="settings-item-icon">🔖</span> Guardado</div>
-            <div class="settings-item-right"><span>❯</span></div>
-          </div>
-          <div class="settings-item" onclick="openSettingsPane('pane-archive', 'Archivo')">
-            <div class="settings-item-left"><span class="settings-item-icon">📜</span> Archivo</div>
-            <div class="settings-item-right"><span>❯</span></div>
-          </div>
-          <div class="settings-item" onclick="openSettingsPane('pane-activity', 'Tu actividad')">
-            <div class="settings-item-left"><span class="settings-item-icon">📊</span> Tu actividad</div>
-            <div class="settings-item-right"><span>❯</span></div>
-          </div>
-          <div class="settings-item" onclick="openSettingsPane('pane-notifications', 'Notificaciones')">
-            <div class="settings-item-left"><span class="settings-item-icon">🔔</span> Notificaciones</div>
-            <div class="settings-item-right"><span>❯</span></div>
-          </div>
-          <div class="settings-item" onclick="openSettingsPane('pane-time', 'Administración del tiempo')">
-            <div class="settings-item-left"><span class="settings-item-icon">⏳</span> Administración del tiempo</div>
-            <div class="settings-item-right"><span>❯</span></div>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-title">Quién puede ver tu contenido</div>
-          <div class="settings-item" onclick="openSettingsPane('pane-privacy', 'Privacidad de la cuenta')">
-            <div class="settings-item-left"><span class="settings-item-icon">🔒</span> Privacidad de la cuenta</div>
-            <div class="settings-item-right"><span id="privacy-status-text">Privada</span> <span>❯</span></div>
-          </div>
-          <div class="settings-item" onclick="openSettingsPane('pane-blocked', 'Bloqueados')">
-            <div class="settings-item-left"><span class="settings-item-icon">🚫</span> Bloqueados</div>
-            <div class="settings-item-right"><span>0</span> <span>❯</span></div>
-          </div>
-        </div>
-
-        <div class="settings-group">
-          <div class="settings-group-title">Herramientas Comerciales</div>
-          <div class="settings-item" onclick="openSettingsPane('pane-account-type', 'Tipo de cuenta y herramientas')">
-            <div class="settings-item-left"><span class="settings-item-icon">📊</span> Tipo de cuenta y herramientas</div>
-            <div class="settings-item-right"><span>❯</span></div>
-          </div>
-        </div>
-
-        <div class="settings-group" style="border-bottom: none;">
-          <div class="settings-item" onclick="closeSettings(); logout();">
-            <div class="settings-item-left" style="color: #ef4444;"><span class="settings-item-icon">🚪</span> Cerrar sesión</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- SUBPANTALLAS DETALLADAS -->
-      <div id="pane-saved" class="settings-detail-pane">
-        <h4 style="color:#38bdf8;">🔖 Publicaciones Guardadas</h4>
-        <div style="text-align:center; padding:30px 0; color:#64748b;">No tenés publicaciones guardadas.</div>
-      </div>
-      <div id="pane-archive" class="settings-detail-pane">
-        <h4 style="color:#38bdf8;">📜 Archivo de Álbumes</h4>
-        <div style="text-align:center; padding:30px 0; color:#64748b;">El archivo está vacío.</div>
-      </div>
-      <div id="pane-activity" class="settings-detail-pane">
-        <h4 style="color:#38bdf8;">📊 Métricas de Tu Actividad</h4>
-        <div class="card-box">
-          <p style="margin:4px 0; font-size:0.85rem;"><strong>Asistencias Totales:</strong> 12 Eventos</p>
-          <p style="margin:4px 0; font-size:0.85rem;"><strong>Reacciones Recibidas:</strong> 840 pts</p>
-        </div>
-      </div>
-      <div id="pane-notifications" class="settings-detail-pane">
-        <h4 style="color:#38bdf8;">🔔 Configuración de Notificaciones</h4>
-        <div class="settings-item"><div class="settings-item-left">Reacciones a tu foto</div><input type="checkbox" checked></div>
-        <div class="settings-item"><div class="settings-item-left">Alertas de eventos en la zona</div><input type="checkbox" checked></div>
-      </div>
-      <div id="pane-time" class="settings-detail-pane">
-        <h4 style="color:#38bdf8;">⏳ Tiempo en la App</h4>
-        <p style="font-size:0.85rem; color:#cbd5e1;">Promedio diario: <strong>24 minutos</strong></p>
-      </div>
-      <div id="pane-privacy" class="settings-detail-pane">
-        <h4 style="color:#38bdf8;">🔒 Privacidad de la Cuenta</h4>
-        <div class="settings-item" onclick="togglePrivacySetting()">
-          <div class="settings-item-left">Cuenta Privada</div>
-          <input type="checkbox" id="privacy-checkbox" checked readonly>
-        </div>
-      </div>
-      <div id="pane-blocked" class="settings-detail-pane">
-        <h4 style="color:#38bdf8;">🚫 Cuentas Bloqueadas</h4>
-        <p style="font-size:0.85rem; color:#cbd5e1;">No tenés cuentas bloqueadas.</p>
-      </div>
-      <div id="pane-account-type" class="settings-detail-pane">
-        <h4 style="color:#a855f7;">📊 Herramientas Comerciales</h4>
-        <p style="font-size:0.85rem; color:#cbd5e1;">Tipo de Cuenta: <strong>Creador / Organizador</strong></p>
-        <button class="btn-main btn-purple" onclick="alert('✅ Modo Comercial Activado')">Cambiar a Perfil Empresa</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- PANEL DE NOTIFICACIONES -->
-  <div class="notifications-modal" id="notifications-modal">
-    <div style="max-width:500px; margin:0 auto;">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-        <h3 style="margin:0; color:#38bdf8;">🔔 Centro de Notificaciones</h3>
-        <button style="background:none; border:none; color:white; font-size:1.3rem; cursor:pointer;" onclick="toggleNotificationsModal()">✕</button>
-      </div>
-      <div class="notification-item">
-        <div style="color:#38bdf8; font-weight:bold;">💬</div>
-        <div>
-          <strong style="font-size:0.85rem; color:#f8fafc;">Camila_S reaccionó a tu foto (85% SPARK)</strong>
-          <div style="font-size:0.72rem; color:#94a3b8; margin-top:2px;">Hace 12 minutos • Estadio Monumental</div>
-        </div>
-      </div>
-      <div class="notification-item">
-        <div style="color:#4ade80; font-weight:bold;">✨</div>
-        <div>
-          <strong style="font-size:0.85rem; color:#f8fafc;">¡Nueva Conexión Mutua con Marcos_R!</strong>
-          <div style="font-size:0.72rem; color:#94a3b8; margin-top:2px;">Se reaccionaron mutuamente. Ahora son amigos.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- NAVEGACIÓN INFERIOR -->
-  <nav class="bottom-nav" id="bottom-nav-bar" style="display: none;">
-    <div class="nav-item active" onclick="switchTab('feed', this); loadAlbum();">
-      <span class="nav-icon">🏠</span>
-      <span>Inicio</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('events', this)">
-      <span class="nav-icon">📍</span>
-      <span>Eventos</span>
-    </div>
-    <div class="nav-item capture-btn-nav" onclick="switchTab('capture', this)">
-      <span class="nav-icon">📷</span>
-      <span>Capturar</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('wallet', this)">
-      <span class="nav-icon">👛</span>
-      <span>Billetera</span>
-    </div>
-    <div class="nav-item" onclick="switchTab('profile', this)">
-      <span class="nav-icon">👤</span>
-      <span>Mi Muro</span>
-    </div>
+  <!-- NAVEGACIÓN INFERIOR ESTILO FB MÓVIL -->
+  <nav class="fb-nav" id="fb-bottom-nav" style="display: none;">
+    <div class="fb-nav-item active" onclick="switchTab('feed', this); loadFeed();">🏠</div>
+    <div class="fb-nav-item" onclick="switchTab('upload', this)">➕</div>
+    <div class="fb-nav-item" onclick="switchTab('profile', this); loadProfileAlbum();">👤</div>
   </nav>
 
   <script>
     let activeUser = null;
     let currentVenueId = null;
-    let selectedBadgeCode = 'SPARK';
-    let selectedBadgeSymbol = '⚡';
-    let walletBalance = 1500;
-    let isPrivateAccount = true;
-    let currentPendingPayment = null;
-    let activeSettingsPane = null;
 
     document.addEventListener('DOMContentLoaded', () => {
-      const savedUser = localStorage.getItem('booksmash_session');
-      if (savedUser) {
+      const saved = localStorage.getItem('fb_booksmash_session');
+      if (saved) {
         try {
-          activeUser = JSON.parse(savedUser);
+          activeUser = JSON.parse(saved);
           showDashboard();
-        } catch (e) {
-          localStorage.removeItem('booksmash_session');
-        }
+        } catch(e) { localStorage.removeItem('fb_booksmash_session'); }
       }
     });
-
-    function handleCredentialResponse(response) {
-      try {
-        const base64Url = response.credential.split('.')[1];
-        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-        const payload = JSON.parse(decodeURIComponent(atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')));
-
-        activeUser = {
-          id: payload.sub,
-          username: payload.name || payload.given_name || 'Usuario Google',
-          email: payload.email,
-          picture: payload.picture
-        };
-
-        localStorage.setItem('booksmash_session', JSON.stringify(activeUser));
-        showDashboard();
-      } catch (e) {
-        console.error('Error en Google Auth:', e);
-      }
-    }
-
-    function updateEventPricingUI() {
-      const tier = document.getElementById('event-tier-select').value;
-      const reachEl = document.getElementById('tier-reach-val');
-      const costEl = document.getElementById('tier-cost-val');
-
-      if (tier === 'free') {
-        reachEl.innerText = 'Hasta 50 personas';
-        costEl.innerText = 'GRATIS (1 Racha)';
-      } else if (tier === 'tier1') {
-        reachEl.innerText = '1.200 - 3.500 impresiones';
-        costEl.innerText = '$7.500 ARS (750 BS)';
-      } else if (tier === 'tier2') {
-        reachEl.innerText = '5.000 - 15.000 impresiones';
-        costEl.innerText = '$25.000 ARS (2.500 BS)';
-      } else if (tier === 'tier3') {
-        reachEl.innerText = '25.000+ impresiones + Destacado';
-        costEl.innerText = '$75.000 ARS (7.500 BS)';
-      }
-    }
-
-    function triggerEventCheckout() {
-      const name = document.getElementById('event-name-input').value;
-      if (!name) return alert('Ingresá el nombre del evento');
-      
-      const tier = document.getElementById('event-tier-select').value;
-      if (tier === 'free') {
-        alert(`✅ Evento "${name}" creado exitosamente.`);
-        addEventToList(name, 'MICRO');
-        return;
-      }
-
-      let costARS = 7500, costBS = 750;
-      if (tier === 'tier2') { costARS = 25000; costBS = 2500; }
-      if (tier === 'tier3') { costARS = 75000; costBS = 7500; }
-
-      currentPendingPayment = { title: name, costARS, costBS };
-      openCheckoutModal(`Pase: ${name}`, costARS, costBS);
-    }
-
-    function addEventToList(title, tag) {
-      const list = document.getElementById('events-list-container');
-      list.innerHTML = `
-        <div class="event-card" style="border-color:#a855f7;">
-          <div class="event-card-info">
-            <h4>${title} <span class="event-badge-promoted">${tag}</span></h4>
-            <p>📍 En tu zona • 👥 Destacado por el organizador</p>
-          </div>
-          <button class="btn-main" style="width: auto; padding: 6px 12px; font-size: 0.8rem;" onclick="checkinFromCard('QR_NUEVO', '${title}')">Asistir</button>
-        </div>
-      ` + list.innerHTML;
-    }
-
-    function openCheckoutModal(title, priceARS, priceBS) {
-      document.getElementById('checkout-item-title').innerText = title;
-      document.getElementById('checkout-item-price').innerText = `$${priceARS.toLocaleString('es-AR')} ARS (${priceBS} BS)`;
-      document.getElementById('checkout-bs-available').innerText = `${walletBalance} BS`;
-      document.getElementById('checkout-modal').classList.add('active');
-    }
-
-    function closeCheckoutModal() {
-      document.getElementById('checkout-modal').classList.remove('active');
-    }
-
-    function switchCheckoutTab(type, btn) {
-      document.querySelectorAll('.checkout-tab').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('checkout-pane-mp').style.display = 'none';
-      document.getElementById('checkout-pane-transfer').style.display = 'none';
-      document.getElementById('checkout-pane-card').style.display = 'none';
-      document.getElementById('checkout-pane-bs').style.display = 'none';
-      document.getElementById(`checkout-pane-${type}`).style.display = 'block';
-    }
-
-    function confirmPayment(method) {
-      alert(`🎉 ¡Pago procesado de forma segura vía ${method}!`);
-      if (currentPendingPayment) {
-        addEventToList(currentPendingPayment.title, 'PATROCINADO');
-        currentPendingPayment = null;
-      }
-      closeCheckoutModal();
-    }
-
-    function openSettings() {
-      document.getElementById('settings-main-menu').style.display = 'block';
-      document.querySelectorAll('.settings-detail-pane').forEach(p => p.classList.remove('active'));
-      document.getElementById('settings-header-title').innerText = 'Configuración y actividad';
-      activeSettingsPane = null;
-      document.getElementById('settings-modal').classList.add('active');
-    }
-
-    function closeSettings() {
-      document.getElementById('settings-modal').classList.remove('active');
-    }
-
-    function openSettingsPane(paneId, title) {
-      document.getElementById('settings-main-menu').style.display = 'none';
-      document.querySelectorAll('.settings-detail-pane').forEach(p => p.classList.remove('active'));
-      document.getElementById(paneId).classList.add('active');
-      document.getElementById('settings-header-title').innerText = title;
-      activeSettingsPane = paneId;
-    }
-
-    function settingsBackHandler() {
-      if (activeSettingsPane) openSettings();
-      else closeSettings();
-    }
-
-    function togglePrivacySetting() {
-      isPrivateAccount = !isPrivateAccount;
-      document.getElementById('privacy-status-text').innerText = isPrivateAccount ? 'Privada' : 'Pública';
-      document.getElementById('privacy-checkbox').checked = isPrivateAccount;
-    }
-
-    function validateRegisterForm() {
-      const email = document.getElementById('reg-email').value;
-      const pass = document.getElementById('reg-password').value;
-      const hint = document.getElementById('reg-password-hint');
-
-      const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-      const isPassValid = /^(?=.*[A-Z])(?=.*\d).{8,}$/.test(pass);
-
-      if (!isPassValid && pass.length > 0) hint.classList.add('error');
-      else hint.classList.remove('error');
-
-      return isEmailValid && isPassValid;
-    }
-
-    function selectBadge(code, symbol, el) {
-      selectedBadgeCode = code;
-      selectedBadgeSymbol = symbol;
-      document.querySelectorAll('.badge-option').forEach(b => b.classList.remove('selected'));
-      el.classList.add('selected');
-    }
-
-    function toggleNotificationsModal() {
-      document.getElementById('notifications-modal').classList.toggle('active');
-    }
 
     function switchAuthTab(tab) {
       if (tab === 'login') {
@@ -797,7 +238,6 @@
     async function login() {
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
-
       try {
         const res = await fetch('/api/users/login', {
           method: 'POST',
@@ -805,22 +245,18 @@
           body: JSON.stringify({ email, password })
         });
         const data = await res.json();
-
         if (res.ok) {
           activeUser = data.user;
-          localStorage.setItem('booksmash_session', JSON.stringify(activeUser));
+          localStorage.setItem('fb_booksmash_session', JSON.stringify(activeUser));
           showDashboard();
-        } else alert(data.error || 'Credenciales inválidas');
-      } catch (err) { alert('Error de conexión'); }
+        } else { alert(data.error || 'Credenciales inválidas'); }
+      } catch(e) { alert('Error de conexión'); }
     }
 
     async function register() {
-      if (!validateRegisterForm()) return alert('⚠️ Formato de email o contraseña inválido.');
-
       const username = document.getElementById('reg-username').value;
       const email = document.getElementById('reg-email').value;
       const password = document.getElementById('reg-password').value;
-
       try {
         const res = await fetch('/api/users/register', {
           method: 'POST',
@@ -828,58 +264,51 @@
           body: JSON.stringify({ username, email, password })
         });
         const data = await res.json();
-
         if (res.ok) {
           activeUser = data.user;
-          localStorage.setItem('booksmash_session', JSON.stringify(activeUser));
+          localStorage.setItem('fb_booksmash_session', JSON.stringify(activeUser));
           showDashboard();
-        } else alert(data.error || 'Error al registrarse');
-      } catch (err) { alert('Error de conexión'); }
+        } else { alert(data.error || 'Error al registrar'); }
+      } catch(e) { alert('Error de conexión'); }
     }
 
     function showDashboard() {
       document.getElementById('auth-view').style.display = 'none';
       document.getElementById('dashboard-view').style.display = 'block';
-      document.getElementById('bottom-nav-bar').style.display = 'flex';
+      document.getElementById('fb-bottom-nav').style.display = 'flex';
       document.getElementById('header-user').style.display = 'flex';
-      document.getElementById('user-fullname').innerText = activeUser.username;
-      if (activeUser.picture) document.getElementById('user-avatar-main').src = activeUser.picture;
-      loadAlbum();
+      document.getElementById('profile-username').innerText = activeUser.username;
+      loadFeed();
     }
 
     function logout() {
-      localStorage.removeItem('booksmash_session');
+      localStorage.removeItem('fb_booksmash_session');
       activeUser = null;
       document.getElementById('auth-view').style.display = 'flex';
       document.getElementById('dashboard-view').style.display = 'none';
-      document.getElementById('bottom-nav-bar').style.display = 'none';
+      document.getElementById('fb-bottom-nav').style.display = 'none';
       document.getElementById('header-user').style.display = 'none';
     }
 
-    function switchTab(tabId, navBtn) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    function switchTab(tabId, el) {
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      document.querySelectorAll('.fb-nav-item').forEach(i => i.classList.remove('active'));
       document.getElementById(`tab-${tabId}`).classList.add('active');
-      if (navBtn) navBtn.classList.add('active');
+      if (el) el.classList.add('active');
     }
 
-    function toggleFollowMutual(userId, btn) {
-      if (btn.classList.contains('connected')) return;
-      btn.classList.add('connected');
-      btn.innerHTML = '✓ Amigos';
-      alert('✨ ¡Conexión Mutua Confirmada!');
-    }
-
-    function checkinFromCard(qrCode, venueName) {
-      document.getElementById('qr-input').value = qrCode;
-      checkin();
-      switchTab('capture', document.querySelectorAll('.nav-item')[2]);
+    function toggleLike(btn) {
+      btn.classList.toggle('liked');
+      const textSpan = btn.querySelector('.like-text');
+      if (btn.classList.contains('liked')) {
+        textSpan.innerText = 'Me gusta 👍';
+      } else {
+        textSpan.innerText = 'Me gusta';
+      }
     }
 
     function checkin() {
-      if (!activeUser) return;
       const qr_code_hash = document.getElementById('qr-input').value;
-
       fetch('/api/venues/checkin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -889,100 +318,94 @@
       .then(data => {
         if (data.venue) {
           currentVenueId = data.venue.id;
-          document.getElementById('checkin-status').innerText = `✅ Presencia confirmada: ${data.venue.name}`;
-          document.getElementById('upload-card').style.display = 'block';
-        } else alert('Código QR no válido');
+          document.getElementById('checkin-status').innerText = `✅ Encontrado: ${data.venue.name}`;
+          document.getElementById('upload-section').style.display = 'block';
+        } else { alert('QR no válido'); }
       });
     }
 
     function uploadSticker() {
       const fileInput = document.getElementById('photo-input');
-      if (!fileInput.files[0]) return alert('Seleccioná una imagen');
+      if (!fileInput.files[0]) return alert('Seleccioná una foto');
 
       const formData = new FormData();
       formData.append('photo', fileInput.files[0]);
       formData.append('user_id', activeUser.id);
       formData.append('venue_id', currentVenueId || '1');
-      formData.append('device_watermark', 'iPhone 15 Pro');
+      formData.append('device_watermark', 'Publicación Oficial');
 
       fetch('/api/stickers', { method: 'POST', body: formData })
       .then(res => res.json())
       .then(data => {
         if (data.sticker) {
           fileInput.value = '';
-          document.getElementById('upload-card').style.display = 'none';
+          document.getElementById('upload-section').style.display = 'none';
           document.getElementById('checkin-status').innerText = '';
-          loadAlbum();
-          switchTab('feed', document.querySelectorAll('.nav-item')[0]);
+          switchTab('feed', document.querySelectorAll('.fb-nav-item')[0]);
+          loadFeed();
         }
       });
     }
 
-    async function loadAlbum() {
+    async function loadFeed() {
       if (!activeUser) return;
-
       try {
         const res = await fetch(`/api/stickers/user/${activeUser.id}`);
         const data = await res.json();
-        const grid = document.getElementById('album-grid');
-        const feedContainer = document.getElementById('feed-container');
-        grid.innerHTML = '';
-        feedContainer.innerHTML = '';
-
-        const totalCollected = data.album ? data.album.length : 0;
-        document.getElementById('stat-places').innerText = totalCollected;
-        document.getElementById('stat-score').innerText = `${Math.min(totalCollected * 10, 100)}%`;
+        const container = document.getElementById('feed-container');
+        container.innerHTML = '';
 
         if (data.album && data.album.length > 0) {
           data.album.forEach(st => {
-            grid.innerHTML += `
-              <div class="sticker-slot">
-                <img src="${st.image_url}" alt="Figurita">
-                <div class="device-tag">${st.device_watermark || 'iPhone 15 Pro'}</div>
-              </div>
-            `;
-
-            feedContainer.innerHTML += `
-              <div class="feed-post">
-                <div class="feed-header">
-                  <div class="feed-user-info">
-                    <img src="${activeUser.picture || '/logo.jpg'}" class="feed-avatar">
-                    <div>
-                      <strong style="font-size:0.88rem; color:white;">${activeUser.username}</strong>
-                      <div style="font-size:0.7rem; color:#94a3b8;">📍 ${st.venue_name}</div>
-                    </div>
+            container.innerHTML += `
+              <div class="fb-post">
+                <div class="fb-post-header">
+                  <img src="/logo.jpg" class="fb-avatar">
+                  <div>
+                    <div class="fb-post-user">${activeUser.username}</div>
+                    <div class="fb-post-time">📍 ${st.venue_name || 'Evento'} • Hace un momento</div>
                   </div>
-                  <button class="follow-btn-mutual" onclick="toggleFollowMutual('${st.user_id}', this)">
-                    ✨ Reacción Mutua
-                  </button>
                 </div>
-                
-                <div class="feed-img-wrapper">
-                  <div class="photo-watermark-overlay">📱 ${st.device_watermark || 'iPhone 15 Pro'}</div>
-                  <img src="${st.image_url}" class="feed-img">
+                <div class="fb-post-body">Momento capturado en ${st.venue_name || 'el evento'}.</div>
+                <img src="${st.image_url}" class="fb-post-img">
+                <div class="fb-post-stats">
+                  <span>👍 1 Me gusta</span>
+                  <span>0 comentarios</span>
                 </div>
-
-                <div class="feed-reaction-bar">
-                  <div class="custom-badge-icon">${selectedBadgeSymbol}</div>
-                  <div class="slider-container">
-                    <input type="range" min="0" max="100" value="50" class="reaction-slider" oninput="this.nextElementSibling.innerText = this.value + '%'">
-                    <span class="reaction-val-text">50%</span>
-                  </div>
+                <div class="fb-post-actions">
+                  <button class="fb-action-btn" onclick="toggleLike(this)"><span class="like-text">Me gusta</span></button>
+                  <button class="fb-action-btn">💬 Comentar</button>
+                  <button class="fb-action-btn">↗️ Compartir</button>
                 </div>
               </div>
             `;
           });
         } else {
-          feedContainer.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 20px;">No hay publicaciones aún. ¡Capturá la primera foto!</p>';
+          container.innerHTML = '<div style="background:white; padding:20px; text-align:center; border-radius:8px; color:#65676b;">No hay publicaciones en el feed todavía. ¡Subí la primera!</div>';
         }
+      } catch(e) { console.error(e); }
+    }
 
-        for (let i = 0; i < Math.max(10, totalCollected + 2) - totalCollected; i++) {
-          grid.innerHTML += `<div class="sticker-slot" style="background: rgba(15, 23, 42, 0.4); border-style: dashed;"></div>`;
+    async function loadProfileAlbum() {
+      if (!activeUser) return;
+      try {
+        const res = await fetch(`/api/stickers/user/${activeUser.id}`);
+        const data = await res.json();
+        const grid = document.getElementById('profile-album-grid');
+        grid.innerHTML = '';
+
+        if (data.album && data.album.length > 0) {
+          data.album.forEach(st => {
+            grid.innerHTML += `
+              <div class="album-item">
+                <img src="${st.image_url}">
+              </div>
+            `;
+          });
+        } else {
+          grid.innerHTML = '<p style="color:#65676b; grid-column:span 3; text-align:center;">Sin fotos en el álbum.</p>';
         }
-
-      } catch (err) {
-        console.error('Error al cargar feed:', err);
-      }
+      } catch(e) { console.error(e); }
     }
   </script>
 </body>
